@@ -2,9 +2,10 @@ import { apiInstance } from "@/services/api/auth-instance";
 
 export const MatnrService = {
   async getMatnrList(
-    masterId: number,
     bukrs: number,
     branchId: number,
+    tovarId: number,
+    masterId: number,
     serviceTypeId: number,
   ) {
     try {
@@ -14,7 +15,7 @@ export const MatnrService = {
           params: {
             bukrs,
             branchId,
-            tovarId: 256,
+            tovarId,
             masterId,
             serviceTypeId,
           },

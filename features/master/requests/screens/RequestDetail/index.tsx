@@ -7,7 +7,7 @@ import { ROUTES } from "@/constants/routes";
 import { useActionSheet } from "@/providers/ActionSheetProvider";
 import { RequestDetailParams } from "@/types/navigation.interface";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Text, View } from "react-native";
 import {
   useRequestDetail,

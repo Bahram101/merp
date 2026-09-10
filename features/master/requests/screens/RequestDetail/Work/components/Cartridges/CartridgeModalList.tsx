@@ -1,11 +1,12 @@
-import React from "react";
-import SparePartModalListItem from "./CartridgeModalListItem";
+import { MatnrItem, SelectedMatnrItem } from "@/features/master/requests/types";
+import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import CartridgeModalListItem from "./CartridgeModalListItem";
 
 type Props = {
-  data: any[];
+  data: MatnrItem[];
   selectedIds: string[];
-  selectedItems: any[];
-  handleAddPart: (item: any, qty: number) => void;
+  selectedItems: SelectedMatnrItem[];
+  handleAddPart: (item: MatnrItem, qty: number) => void;
 };
 
 const SparePartModalList = ({
@@ -15,18 +16,21 @@ const SparePartModalList = ({
   handleAddPart,
 }: Props) => {
   return (
-    <>
-      {data.map((item, index) => (
-        <SparePartModalListItem
-          key={item.fno}
+    <BottomSheetFlatList
+      data={data}
+      keyExtractor={(item: any) => item.matnrId.toString()}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={{ paddingBottom: 40 }}
+      renderItem={({ item, index }: { item: MatnrItem; index: number }) => (
+        <CartridgeModalListItem
           item={item}
-          isSelected={selectedIds?.includes(String(item.index))}
           isLast={index === data.length - 1}
+          isSelected={selectedIds.includes(String(item.matnrId))}
           selectedItems={selectedItems}
           onAddPart={handleAddPart}
         />
-      ))}
-    </>
+      )}
+    />
   );
 };
 

@@ -1,6 +1,5 @@
 import { MatnrItem, SelectedMatnrItem } from "@/features/master/requests/types";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import React from "react";
 import SparePartModalListItem from "./SparePartModalListItem";
 
 type Props = {

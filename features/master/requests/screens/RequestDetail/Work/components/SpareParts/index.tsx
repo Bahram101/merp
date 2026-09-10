@@ -1,11 +1,11 @@
+import SparePartActionSheet from "@/components/ui/actionsheet/SparePartActionSheet";
 import { MatnrItem, SelectedMatnrItem } from "@/features/master/requests/types";
 import { useActionSheet } from "@/providers/ActionSheetProvider";
 import { useBottomSheet } from "@/providers/BottomSheet/AppBottomSheetProvider";
 import * as Haptics from "expo-haptics";
 import { CirclePlus } from "lucide-react-native";
-import React, { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { Pressable, Text, View } from "react-native";
-import SparePartActionSheet from "@/components/ui/actionsheet/SparePartActionSheet";
 import SparePartTable from "./SparePartTable";
 
 type SparePartsProps = {
@@ -43,7 +43,7 @@ const SparePart = ({
         selectedItems,
         handleAddPart,
       },
-      { title: "Продажа запчастей", snapPoints: ["100%"] },
+      { title: "Продажа запчастей", snapPoints: ["40%"] },
     );
   };
 

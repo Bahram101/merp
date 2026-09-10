@@ -6,9 +6,10 @@ import { usePreventBack } from "@/hooks/usePreventBack";
 // import { request } from "@/services/api/request";
 import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, View } from "react-native";
 import { useMatnr } from "../../../hooks/useMatnr";
+import { useUpdateRequestStatus } from "../../../hooks/useRequest";
 import {
   useCheckServices,
   useServiceApplication,
@@ -24,6 +25,7 @@ const RequestWorkScreen = () => {
   const { appNumber } = useLocalSearchParams();
   const navigation = useNavigation();
   const { serviceApplication } = useServiceApplication(Number(appNumber));
+  const { updateRequestStatus, isLoading: loading } = useUpdateRequestStatus();
 
   const { services, isLoading } = useServices();
   const [selectedServiceItems, setSelectedServiceItems] = useState<
@@ -39,8 +41,8 @@ const RequestWorkScreen = () => {
   const { checkServiceAsync, isLoading: isLoadingCheckService } =
     useCheckServices();
   const [filteredServList, setFilteredServList] = useState<ServiceItem[]>([]);
-  const { data: matnrList } = useMatnr(3);
-  const { data: cartridgeList } = useMatnr(1);
+  const { data: matnrList } = useMatnr(3, serviceApplication.tovarId);
+  const { data: cartridgeList } = useMatnr(1, serviceApplication.tovarId);
 
   useEffect(() => {
     if (services.length > 0) {
@@ -65,6 +67,8 @@ const RequestWorkScreen = () => {
   }, [navigation]);
 
   usePreventBack(ROUTES.REQUESTS);
+
+  // console.log("serviceApplication", serviceApplication);
 
   if (isLoading) {
     return <Loader />;
@@ -137,6 +141,26 @@ const RequestWorkScreen = () => {
     }
   };
 
+  const handleCancel = async () => {
+    try {
+      await updateRequestStatus(
+        {
+          reqId: Number(appNumber),
+          statusId: 2,
+        },
+        {
+          onSuccess: () => {
+            router.push({
+              pathname: ROUTES.REQUESTS,
+            });
+          },
+        },
+      );
+    } catch (error: any) {
+      Alert.alert("Ошибка", error.message);
+    }
+  };
+
   return (
     <Layout className="flex-columns gap-4">
       <Services
@@ -157,6 +181,7 @@ const RequestWorkScreen = () => {
       />
       <View className="flex-1">
         <AnimatedButton
+          className="w-full p-4"
           bg="primary"
           bgPressed="primaryDark"
           textColor="white"
@@ -164,6 +189,18 @@ const RequestWorkScreen = () => {
           onPress={handleCheck}
         >
           Проверить
+        </AnimatedButton>
+      </View>
+      <View className="flex-1">
+        <AnimatedButton
+          className="w-full p-4"
+          bg="red"
+          bgPressed="redDark"
+          textColor="white"
+          onPress={handleCancel}
+          isLoading={loading}
+        >
+          Отменить прибытие
         </AnimatedButton>
       </View>
     </Layout>
