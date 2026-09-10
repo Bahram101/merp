@@ -10,7 +10,6 @@ import React, {
   useRef,
 } from "react";
 import {
-  Dimensions,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -42,8 +41,6 @@ const AppBottomSheet = forwardRef<AppBottomSheetRef, Props>(
     ref,
   ) => {
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const SCREEN_HEIGHT = Dimensions.get("window").height;
-    const SHEET_HEIGHT = SCREEN_HEIGHT * 1;
 
     useImperativeHandle(ref, () => ({
       open: () => bottomSheetRef.current?.expand(),
@@ -105,7 +102,7 @@ const AppBottomSheet = forwardRef<AppBottomSheetRef, Props>(
         animateOnMount={false}
         enableDynamicSizing={false}
       >
-        <View style={{ height: SHEET_HEIGHT }}>
+        <View style={{ flex: 1 }}>
           {/* fixed header */}
           <View
             className={cn(

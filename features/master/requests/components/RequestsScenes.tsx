@@ -6,6 +6,7 @@ import {
 } from "@/utils/date";
 import { Fragment, useState } from "react";
 import { FlatList, Text, View } from "react-native";
+import { ApplicationStatusId } from "../constants/status";
 import {
   useDoneRequests,
   useFinishedSummary,
@@ -81,7 +82,10 @@ export default function RequestsScenes({ route }: Props) {
 
   const assignedReqList = [...requests].sort((a, b) => {
     const getPriority = (item: any) => {
-      if (item.applicationStatusId === 9 || item.applicationStatusId === 10)
+      if (
+        item.applicationStatusId === ApplicationStatusId.ACCEPTED ||
+        item.applicationStatusId === ApplicationStatusId.ARRIVED
+      )
         return 1;
       if (item.urgencyLevel) return 2;
       return 3;

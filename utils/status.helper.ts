@@ -1,3 +1,5 @@
+import { ApplicationStatusId } from "@/features/master/requests/constants/status";
+
 export type StatusText = "assigned" | "done" | "finished";
 
 const map: Record<StatusText, string> = {
@@ -12,8 +14,8 @@ export const getStatusColor = (status: StatusText): string => {
 /****************************************************************** */
 export const getStatusMeta = (item: any) => {
   if (
-    item.applicationStatusId === 9 || //Принята
-    item.applicationStatusId === 10 // Прибыл
+    item.applicationStatusId === ApplicationStatusId.ACCEPTED ||
+    item.applicationStatusId === ApplicationStatusId.ARRIVED
   ) {
     return {
       label: "Активная",

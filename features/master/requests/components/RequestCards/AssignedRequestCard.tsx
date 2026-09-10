@@ -2,7 +2,7 @@ import { getStatusMeta } from "@/utils/status.helper";
 import { Feather } from "@expo/vector-icons";
 import cn from "clsx";
 import { router } from "expo-router";
-import React, { FC } from "react";
+import { FC } from "react";
 import { Text, View } from "react-native";
 
 import AnimatedBlock from "@/components/ui/button/AnimatedBlock";
@@ -10,6 +10,7 @@ import { ROUTES } from "@/constants/routes";
 import { COLORS } from "@/constants/theme";
 import { formatDayMonth } from "@/utils/date";
 import { CalendarDays, Clock } from "lucide-react-native";
+import { ApplicationStatusId } from "../../constants/status";
 import { IRequest } from "../../types";
 
 type AssignedRequestCardProps = {
@@ -20,9 +21,9 @@ const AssignedRequestCard: FC<AssignedRequestCardProps> = ({ item }) => {
   const handlePress = () => {
     router.push({
       pathname:
-        item.applicationStatusId === 10
+        item.applicationStatusId === ApplicationStatusId.ARRIVED
           ? ROUTES.WORK
-          : ROUTES.REQUEST_DISTRIBUTED,
+          : ROUTES.REQUEST_ASSIGNED,
       params: { appNumber: item.applicationNumber },
     });
   };

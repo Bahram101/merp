@@ -1,6 +1,6 @@
 export const ROUTES = {
   REQUESTS: "/(apps)/master/(tabs)/requests",
-  REQUEST_DISTRIBUTED: "/(apps)/master/(tabs)/requests/[appNumber]",
+  REQUEST_ASSIGNED: "/(apps)/master/(tabs)/requests/[appNumber]",
   REQUEST_DONE: "/(apps)/master/(tabs)/requests/done-requests/[id]",
   WORK: "/(apps)/master/(tabs)/requests/[appNumber]/work",
   PAYMENT: "/(apps)/master/(tabs)/requests/[appNumber]/work/payment",

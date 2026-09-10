@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, View } from "react-native";
+import { ApplicationStatusId } from "../../../constants/status";
 import { useMatnr } from "../../../hooks/useMatnr";
 import { useUpdateRequestStatus } from "../../../hooks/useRequest";
 import {
@@ -146,7 +147,7 @@ const RequestWorkScreen = () => {
       await updateRequestStatus(
         {
           reqId: Number(appNumber),
-          statusId: 2,
+          statusId: ApplicationStatusId.ASSIGNED,
         },
         {
           onSuccess: () => {

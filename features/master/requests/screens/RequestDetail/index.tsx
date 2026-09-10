@@ -4,11 +4,14 @@ import AnimatedButton from "@/components/ui/button/AnimatedButton";
 import { Loader } from "@/components/ui/Loader";
 import Layout from "@/components/ui/master/Layout";
 import { ROUTES } from "@/constants/routes";
+import { ColorKeys } from "@/constants/theme";
 import { useActionSheet } from "@/providers/ActionSheetProvider";
 import { RequestDetailParams } from "@/types/navigation.interface";
+import { TypeFeatherIconNames } from "@/types/types";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Text, View } from "react-native";
+import { ApplicationStatusId } from "../../constants/status";
 import {
   useRequestDetail,
   useUpdateRequestStatus,
@@ -16,6 +19,35 @@ import {
 import Client from "./components/Client";
 import DeviceData from "./components/Device";
 import { Service } from "./components/Service";
+
+const MAIN_BUTTON_CONFIG: Record<
+  ApplicationStatusId,
+  {
+    bg: ColorKeys;
+    bgPressed: ColorKeys;
+    icon: TypeFeatherIconNames;
+    label: string;
+  }
+> = {
+  [ApplicationStatusId.ASSIGNED]: {
+    bg: "primary",
+    bgPressed: "primaryDark",
+    icon: "check",
+    label: "Принять",
+  },
+  [ApplicationStatusId.ACCEPTED]: {
+    bg: "blue",
+    bgPressed: "blueDark",
+    icon: "map-pin",
+    label: "Прибыл",
+  },
+  [ApplicationStatusId.ARRIVED]: {
+    bg: "blue",
+    bgPressed: "blueDark",
+    icon: "map-pin",
+    label: "В работе",
+  },
+};
 
 export default function RequestDetailScreen() {
   const navigation = useNavigation();
@@ -58,17 +90,18 @@ export default function RequestDetailScreen() {
   const handleMainButton = async () => {
     setLoadingType("main");
     try {
-      if (requestDetail.applicationStatusId === 2) {
+      if (requestDetail.applicationStatusId === ApplicationStatusId.ASSIGNED) {
         await updateRequestStatus({
           reqId: requestDetail.applicationNumber,
-          statusId: 9,
+          statusId: ApplicationStatusId.ACCEPTED,
         });
-      }
-      if (requestDetail.applicationStatusId === 9) {
+      } else if (
+        requestDetail.applicationStatusId === ApplicationStatusId.ACCEPTED
+      ) {
         await updateRequestStatus(
           {
             reqId: requestDetail.applicationNumber,
-            statusId: 10,
+            statusId: ApplicationStatusId.ARRIVED,
           },
           {
             onSuccess: () => {
@@ -79,8 +112,9 @@ export default function RequestDetailScreen() {
             },
           },
         );
-      }
-      if (requestDetail.applicationStatusId === 10) {
+      } else if (
+        requestDetail.applicationStatusId === ApplicationStatusId.ARRIVED
+      ) {
         router.replace({
           pathname: ROUTES.WORK,
           params: {
@@ -135,7 +169,7 @@ export default function RequestDetailScreen() {
     try {
       await updateRequestStatus({
         reqId: requestDetail.applicationNumber,
-        statusId: 2,
+        statusId: ApplicationStatusId.ASSIGNED,
       });
     } finally {
       setLoadingType(null);
@@ -145,6 +179,14 @@ export default function RequestDetailScreen() {
   const onPressCall = () => {
     openSheet(<PhoneActionSheet phones={phones} />);
   };
+
+  const isAssigned =
+    requestDetail.applicationStatusId === ApplicationStatusId.ASSIGNED;
+
+  const mainButtonConfig =
+    MAIN_BUTTON_CONFIG[
+      requestDetail.applicationStatusId as ApplicationStatusId
+    ] ?? MAIN_BUTTON_CONFIG[ApplicationStatusId.ARRIVED];
 
   return (
     <Layout className="gap-3" refreshing={refreshing} onRefresh={onRefresh}>
@@ -191,20 +233,14 @@ export default function RequestDetailScreen() {
 
       <AnimatedButton
         className="h-20"
-        bg={requestDetail.applicationStatusId === 2 ? "primary" : "blue"}
-        bgPressed={
-          requestDetail.applicationStatusId === 2 ? "primaryDark" : "blueDark"
-        }
-        icon={requestDetail.applicationStatusId === 2 ? "check" : "map-pin"}
+        bg={mainButtonConfig.bg}
+        bgPressed={mainButtonConfig.bgPressed}
+        icon={mainButtonConfig.icon}
         iconColor="white"
         onPress={handleMainButton}
         isLoading={loadingType === "main"}
       >
-        {requestDetail.applicationStatusId === 2
-          ? "Принять"
-          : requestDetail.applicationStatusId === 9
-            ? "Прибыл"
-            : "В работе"}
+        {mainButtonConfig.label}
       </AnimatedButton>
 
       <View className="flex-row gap-3">
@@ -234,7 +270,7 @@ export default function RequestDetailScreen() {
             textColor="white"
             isLoading={loadingType === "cancel"}
             onPress={handleCancel}
-            disabled={requestDetail.applicationStatusId === 2}
+            disabled={isAssigned}
           >
             <Text style={{ lineHeight: 18 }}>{"Отменить \n принятое"}</Text>
           </AnimatedButton>
