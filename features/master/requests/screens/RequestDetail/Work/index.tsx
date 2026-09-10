@@ -151,7 +151,7 @@ const RequestWorkScreen = () => {
         },
         {
           onSuccess: () => {
-            router.push({
+            router.dismissTo({
               pathname: ROUTES.REQUESTS,
             });
           },
