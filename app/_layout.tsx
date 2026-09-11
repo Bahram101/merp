@@ -5,7 +5,7 @@ import "@/global.css";
 import ActionSheetProvider from "@/providers/ActionSheetProvider";
 import AppBottomSheetProvider from "@/providers/BottomSheet/AppBottomSheetProvider";
 import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
-import { usePreventScreenCapture } from "expo-screen-capture";
+// import { usePreventScreenCapture } from "expo-screen-capture";
 import { useEffect, useRef } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
@@ -14,7 +14,7 @@ import RootLayout from "./RootLayout";
 export default function RootlayoutWrapper() {
   const modalRef = useRef<AppBottomSheetRef>(null);
 
-  usePreventScreenCapture();
+  // usePreventScreenCapture();
 
   useEffect(() => {
     modalRef.current?.open?.();
