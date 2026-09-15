@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Keyboard, Text, TouchableWithoutFeedback, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -17,8 +17,8 @@ const Auth = () => {
   const { control, reset, handleSubmit } = useForm<AuthFormData>({
     mode: "onChange",
     defaultValues: {
-      username: "",
-      password: "",
+      username: "bolat.ab",
+      password: "Almaty0220bv",
     },
   });
   const { loginSync, isLoading } = useAuthMutations(reset);
