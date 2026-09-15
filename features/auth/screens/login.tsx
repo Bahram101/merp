@@ -18,7 +18,7 @@ const Auth = () => {
     mode: "onChange",
     defaultValues: {
       username: "bolat.ab",
-      password: "Almaty0220bv",
+      password: "Almaty0220",
     },
   });
   const { loginSync, isLoading } = useAuthMutations(reset);

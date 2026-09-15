@@ -69,8 +69,6 @@ const RequestWorkScreen = () => {
 
   usePreventBack(ROUTES.REQUESTS);
 
-  // console.log("serviceApplication", serviceApplication);
-
   if (isLoading) {
     return <Loader />;
   }

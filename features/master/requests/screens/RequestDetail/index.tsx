@@ -3,6 +3,7 @@ import PhoneActionSheet from "@/components/ui/actionsheet/PhoneActionSheet";
 import AnimatedButton from "@/components/ui/button/AnimatedButton";
 import { Loader } from "@/components/ui/Loader";
 import Layout from "@/components/ui/master/Layout";
+import { useWatermarkLabel } from "@/components/common/Watermark";
 import { ROUTES } from "@/constants/routes";
 import { ColorKeys } from "@/constants/theme";
 import { useActionSheet } from "@/providers/ActionSheetProvider";
@@ -52,6 +53,7 @@ const MAIN_BUTTON_CONFIG: Record<
 export default function RequestDetailScreen() {
   const navigation = useNavigation();
   const { openSheet } = useActionSheet();
+  const watermarkLabel = useWatermarkLabel();
   const { appNumber } = useLocalSearchParams<RequestDetailParams>();
   const { requestDetail, isLoadingReqDetail, refetchRequestDetail } =
     useRequestDetail(Number(appNumber));
@@ -177,7 +179,9 @@ export default function RequestDetailScreen() {
   };
 
   const onPressCall = () => {
-    openSheet(<PhoneActionSheet phones={phones} />);
+    openSheet(
+      <PhoneActionSheet phones={phones} watermarkLabel={watermarkLabel} />,
+    );
   };
 
   const isAssigned =

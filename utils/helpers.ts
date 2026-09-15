@@ -40,13 +40,14 @@ export const formatFullName = (str: string): string => {
 const PHONE_OPERATOR_CODE_LENGTH = 3;
 const PHONE_VISIBLE_TAIL_LENGTH = 4;
 
-// Kazakhstani mobile numbers: 10 digits (operator code + subscriber number),
-// optionally prefixed with a country/trunk code ("+7" or domestic "8").
 export const maskPhoneNumber = (phone: string): string => {
   if (!phone) return "";
 
   let digits = phone.trim().replace(/\D/g, "");
-  if (digits.length === 11 && (digits.startsWith("7") || digits.startsWith("8"))) {
+  if (
+    digits.length === 11 &&
+    (digits.startsWith("7") || digits.startsWith("8"))
+  ) {
     digits = digits.slice(1);
   }
 

@@ -49,7 +49,7 @@
     "expo-updates": "~57.0.21",
     "expo-web-browser": "~57.0.2",
     "lucide-react-native": "^0.510.0",
-    "nativewind": "^4.1.23",
+    "nativewind": "^4.2.7",
     "qs": "^6.15.0",
     "react": "19.2.3",
     "react-aria": "^3.33.0",
