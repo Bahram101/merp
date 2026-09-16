@@ -9,7 +9,7 @@ export const useMatnr = (serviceTypeId: number, tovarId: number) => {
   const branchId = user?.userInfo?.service?.[bukrs ?? ""]?.[0]?.value;
 
   const { data = [], isLoading } = useQuery({
-    queryKey: ["get-matnr-list", masterId, serviceTypeId],
+    queryKey: ["get-matnr-list", masterId, serviceTypeId, tovarId],
     queryFn: () =>
       MatnrService.getMatnrList(
         bukrs!,
@@ -19,7 +19,7 @@ export const useMatnr = (serviceTypeId: number, tovarId: number) => {
         serviceTypeId,
       ),
     retry: 1,
-    enabled: !!masterId && !!bukrs && !!branchId && !!serviceTypeId,
+    enabled: !!masterId && !!bukrs && !!branchId && !!serviceTypeId && !!tovarId,
   });
   return { data, isLoading };
 };

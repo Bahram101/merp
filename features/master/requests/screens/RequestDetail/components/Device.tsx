@@ -6,8 +6,10 @@ import { Text, View } from "react-native";
 import { DeviceType } from "../../../types";
 
 const DeviceData = ({ data }: { data: DeviceType }) => {
-  const date = parseISO(data.contractDate);
-  const cnDate = format(date, "dd.MM.yyyy");
+  const cnDate = data.contractDate
+    ? format(parseISO(data.contractDate), "dd.MM.yyyy")
+    : "-";
+
   return (
     <BaseAccordion title="Данные аппарата" icon="alert-circle" value="device">
       <View className="flex-row gap-2">
