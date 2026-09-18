@@ -6,7 +6,7 @@ import { usePreventBack } from "@/hooks/usePreventBack";
 // import { request } from "@/services/api/request";
 import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert, View } from "react-native";
 import { ApplicationStatusId } from "../../../constants/status";
 import { useMatnr } from "../../../hooks/useMatnr";
@@ -41,17 +41,13 @@ const RequestWorkScreen = () => {
 
   const { checkServiceAsync, isLoading: isLoadingCheckService } =
     useCheckServices();
-  const [filteredServList, setFilteredServList] = useState<ServiceItem[]>([]);
   const { data: matnrList } = useMatnr(3, serviceApplication.tovarId);
   const { data: cartridgeList } = useMatnr(1, serviceApplication.tovarId);
 
-  useEffect(() => {
-    if (services.length > 0) {
-      setFilteredServList(
-        services.filter((item) => !["1", "3", "4", "7"].includes(item.id)),
-      );
-    }
-  }, [services, setFilteredServList]);
+  const filteredServList = useMemo(
+    () => services.filter((item) => !["1", "3", "4", "7"].includes(item.id)),
+    [services],
+  );
 
   useEffect(() => {
     if (appNumber) {

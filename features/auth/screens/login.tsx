@@ -17,8 +17,8 @@ const Auth = () => {
   const { control, reset, handleSubmit } = useForm<AuthFormData>({
     mode: "onChange",
     defaultValues: {
-      username: "bolat.ab",
-      password: "Almaty0220",
+      username: "",
+      password: "",
     },
   });
   const { loginSync, isLoading } = useAuthMutations(reset);
