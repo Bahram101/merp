@@ -1,4 +1,22 @@
 import "dotenv/config";
+import { ConfigPlugin, withAndroidManifest } from "expo/config-plugins";
+
+const withoutMediaPermissions: ConfigPlugin = (config) =>
+  withAndroidManifest(config, (config) => {
+    const manifest = config.modResults.manifest;
+    manifest.$["xmlns:tools"] = "http://schemas.android.com/tools";
+
+    const usesPermission = manifest["uses-permission"] ?? [];
+    usesPermission.push({
+      $: {
+        "android:name": "android.permission.READ_MEDIA_IMAGES",
+        "tools:node": "remove",
+      },
+    });
+    manifest["uses-permission"] = usesPermission;
+
+    return config;
+  });
 
 export default {
   expo: {
@@ -60,6 +78,8 @@ export default {
             "Приложению нужен доступ к Face ID для быстрого входа",
         },
       ],
+
+      withoutMediaPermissions,
     ],
 
     experiments: {
