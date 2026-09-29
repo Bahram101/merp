@@ -18,9 +18,11 @@ const withoutMediaPermissions: ConfigPlugin = (config) =>
     return config;
   });
 
+const IS_DEV = process.env.APP_VARIANT === "development";
+
 export default {
   expo: {
-    name: "merp",
+    name: IS_DEV ? "MERP (Dev)" : "merp",
     slug: "merp",
     version: "1.0.15",
     orientation: "portrait",
@@ -30,14 +32,14 @@ export default {
 
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "aura.merp.app",
+      bundleIdentifier: IS_DEV ? "aura.merp.app.dev" : "aura.merp.app",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
       },
     },
 
     android: {
-      package: "aura.merp.app",
+      package: IS_DEV ? "aura.merp.app.dev" : "aura.merp.app",
       predictiveBackGestureEnabled: false,
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",

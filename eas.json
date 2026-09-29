@@ -4,7 +4,8 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "SERVER_URL": "https://api-test.aura-it.kz:9443"
+        "SERVER_URL": "https://api-test.aura-it.kz:9443",
+        "APP_VARIANT": "development"
       },
       "android": {
         "buildType": "apk"
