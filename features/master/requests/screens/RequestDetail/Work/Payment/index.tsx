@@ -1,11 +1,12 @@
 import Layout from "@/components/ui/master/Layout";
 import { ROUTES } from "@/constants/routes";
+import { useCashBankHkonts } from "@/features/master/requests/hooks/useFinance";
 import { useCreatePayment } from "@/features/master/requests/hooks/useService";
 import { groupPaymentItems } from "@/features/master/utils/payment.helpers";
 import { getToday } from "@/utils/date";
 import { useQueryClient } from "@tanstack/react-query";
 import { router, useNavigation } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Alert } from "react-native";
 import PaymentMethods from "./components/PaymentMethods";
@@ -24,6 +25,7 @@ const PaymentScreen = () => {
   const [method, setMethod] = useState<"cash" | "cashless">("cash");
   const [isSplit, setIsSplit] = useState(false);
   const { createPaymentAsync, isPaymentLoading } = useCreatePayment();
+  const { cashBankHkonts, isLoadingCashBankHkonts } = useCashBankHkonts();
   const [lastChanged, setLastChanged] = useState<
     "cashVal" | "cashlessVal" | null
   >(null);
@@ -34,6 +36,10 @@ const PaymentScreen = () => {
       cashlessVal: "",
     },
   });
+
+  const cashRegister = cashBankHkonts.find((item) =>
+    String(item.value).startsWith("1010"),
+  );
 
   const cashVal = watch("cashVal");
   const cashlessVal = watch("cashlessVal");
@@ -92,12 +98,17 @@ const PaymentScreen = () => {
     if (!appNumber) return;
 
     if (!isSplit) {
+      if (method === "cash" && !cashRegister) {
+        Alert.alert("Ошибка", "Касса филиала не найдена");
+        return;
+      }
+
       const payload = {
         ...data,
         paymentParts: [
           {
             amount: sumForPay,
-            hkont: method === "cash" ? 10100403 : 10300220,
+            hkont: method === "cash" ? cashRegister!.value : 10300220,
             paymentType: method === "cash" ? "CASH" : "CASHLESS",
             paymentNumber: "",
             date: getToday(),
@@ -128,28 +139,52 @@ const PaymentScreen = () => {
         });
       }
     } else {
-      const payload = {
-        ...data,
-        paymentParts: [
-          {
-            amount: Number(values.cashVal),
-            hkont: 10100403,
-            paymentType: "CASH",
-            paymentNumber: "",
-            date: getToday(),
-          },
-          {
-            amount: Number(values.cashlessVal),
-            hkont: 10300220,
-            paymentType: "CASHLESS",
-            paymentNumber: "",
-            date: getToday(),
-          },
-        ],
-      };
+      const cashAmount = Number(values.cashVal) || 0;
+      const cashlessAmount = Number(values.cashlessVal) || 0;
 
-      if (Number(values.cashVal) + Number(values.cashlessVal) !== sumForPay) {
+      if (cashAmount + cashlessAmount !== sumForPay) {
         Alert.alert("Ошибка", `Сумма должна равняться ${sumForPay}`);
+        return;
+      }
+
+      if (cashAmount > 0 && !cashRegister) {
+        Alert.alert("Ошибка", "Касса филиала не найдена");
+        return;
+      }
+
+      const paymentParts = [
+        cashAmount > 0
+          ? {
+              amount: cashAmount,
+              hkont: cashRegister!.value,
+              paymentType: "CASH",
+              paymentNumber: "",
+              date: getToday(),
+            }
+          : null,
+        cashlessAmount > 0
+          ? {
+              amount: cashlessAmount,
+              hkont: 10300220,
+              paymentType: "CASHLESS",
+              paymentNumber: "",
+              date: getToday(),
+            }
+          : null,
+      ].filter((part) => part !== null);
+
+      const payload = { ...data, paymentParts };
+
+      // Bitta qism 0 bo'lsa, bu aralash to'lov emas — oddiy bitta usul kabi yuboriladi
+      if (cashlessAmount === 0) {
+        try {
+          await createPaymentAsync(payload);
+          router.push({
+            pathname: ROUTES.PAYMENT_SUCCESS,
+          });
+        } catch (e: any) {
+          Alert.alert("Ошибка", e.message);
+        }
         return;
       }
 
@@ -179,7 +214,7 @@ const PaymentScreen = () => {
       <PaymentMethods
         currencyName={currencyName}
         total={sumForPay}
-        isPaymentLoading={isPaymentLoading}
+        isPaymentLoading={isPaymentLoading || isLoadingCashBankHkonts}
         method={method}
         control={control}
         isSplit={isSplit}
