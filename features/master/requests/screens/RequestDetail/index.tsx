@@ -21,14 +21,16 @@ import Client from "./components/Client";
 import DeviceData from "./components/Device";
 import { Service } from "./components/Service";
 
-const MAIN_BUTTON_CONFIG: Record<
-  ApplicationStatusId,
-  {
-    bg: ColorKeys;
-    bgPressed: ColorKeys;
-    icon: TypeFeatherIconNames;
-    label: string;
-  }
+const MAIN_BUTTON_CONFIG: Partial<
+  Record<
+    ApplicationStatusId,
+    {
+      bg: ColorKeys;
+      bgPressed: ColorKeys;
+      icon: TypeFeatherIconNames;
+      label: string;
+    }
+  >
 > = {
   [ApplicationStatusId.ASSIGNED]: {
     bg: "primary",
@@ -190,7 +192,7 @@ export default function RequestDetailScreen() {
   const mainButtonConfig =
     MAIN_BUTTON_CONFIG[
       requestDetail.applicationStatusId as ApplicationStatusId
-    ] ?? MAIN_BUTTON_CONFIG[ApplicationStatusId.ARRIVED];
+    ] ?? MAIN_BUTTON_CONFIG[ApplicationStatusId.ARRIVED]!;
 
   return (
     <Layout className="gap-3" refreshing={refreshing} onRefresh={onRefresh}>

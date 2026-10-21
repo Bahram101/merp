@@ -6,7 +6,7 @@ import { getStatusColor, StatusText } from "@/utils/status.helper";
 import { Loader } from "../Loader";
 
 type Scheme = "red" | "blue" | "green";
-type StatId = "assigned" | "done" | "finished";
+type StatId = "assigned" | "done" | "completed";
 
 type StatItem = {
   id: StatId;
@@ -20,7 +20,7 @@ type Props = {
   assigned: number;
   isAssignedLoading: boolean;
   done: number;
-  finished: number;
+  completed: number;
 };
 
 const Banner: FC<Props> = ({
@@ -29,7 +29,7 @@ const Banner: FC<Props> = ({
   assigned,
   isAssignedLoading,
   done,
-  finished,
+  completed,
 }) => {
   const DATA: StatItem[] = [
     {
@@ -43,7 +43,7 @@ const Banner: FC<Props> = ({
       scheme: "blue",
     },
     {
-      id: "finished",
+      id: "completed",
       title: "Завершенные заявки на месяц",
       scheme: "green",
     },
@@ -55,7 +55,7 @@ const Banner: FC<Props> = ({
   const valueMap: Record<StatId, number> = {
     assigned,
     done,
-    finished,
+    completed,
   };
 
   return (

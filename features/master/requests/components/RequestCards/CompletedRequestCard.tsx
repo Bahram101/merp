@@ -2,11 +2,11 @@ import { formatCurrency } from "@/utils/helpers";
 import React, { FC } from "react";
 import { Text, View } from "react-native";
 
-type FinishRequestCardProps = {
+type CompletedRequestCardProps = {
   item: any;
 };
 
-const FinishRequestCard: FC<FinishRequestCardProps> = ({ item }) => {
+const CompletedRequestCard: FC<CompletedRequestCardProps> = ({ item }) => {
   return (
     <View className="bg-white rounded-2xl px-4 py-3 mb-2">
       <View className="flex-row items-center justify-between">
@@ -31,4 +31,4 @@ const FinishRequestCard: FC<FinishRequestCardProps> = ({ item }) => {
   );
 };
 
-export default FinishRequestCard;
+export default CompletedRequestCard;

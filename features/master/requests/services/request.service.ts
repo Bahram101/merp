@@ -1,6 +1,7 @@
 import { parseServiceError } from "@/services/api/error";
 import { apiInstance } from "@/services/api/auth-instance";
 import { getCurrentMonthStart, getToday } from "@/utils/date";
+import { ApplicationStatusId } from "../constants/status";
 
 export const RequestService = {
   async getMasterRequests(masterId: number, status: string, bukrs?: number) {
@@ -10,8 +11,12 @@ export const RequestService = {
           bukrs,
           appStatusIds: status,
           masterId,
-          ...((status === "5" || status === "8") && {
-            dateOpenAt: status === "5" ? getCurrentMonthStart() : getToday(),
+          ...((status === String(ApplicationStatusId.COMPLETED) ||
+            status === String(ApplicationStatusId.DONE)) && {
+            dateOpenAt:
+              status === String(ApplicationStatusId.COMPLETED)
+                ? getCurrentMonthStart()
+                : getToday(),
             dateOpenTo: getToday(),
           }),
         },
@@ -76,7 +81,7 @@ export const RequestService = {
     }
   },
 
-  async getFinishedRequests(
+  async getCompletedRequests(
     bukrs: string,
     status: string,
     masterId: number,

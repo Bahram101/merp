@@ -1,6 +1,7 @@
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { getCurrentMonthStart } from "@/utils/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ApplicationStatusId } from "../constants/status";
 import { RequestService } from "../services/request.service";
 
 export const useRequests = (status: string, from?: string, to?: string) => {
@@ -101,7 +102,7 @@ export const useDoneRequestDetail = (id: number) => {
   };
 };
 
-export const useFinishedSummary = ({ enabled }: { enabled: boolean }) => {
+export const useCompletedSummary = ({ enabled }: { enabled: boolean }) => {
   const { user } = useAuth();
   const from = getCurrentMonthStart();
   const masterId = user?.userInfo.currentStaff.staffId;
@@ -109,15 +110,20 @@ export const useFinishedSummary = ({ enabled }: { enabled: boolean }) => {
 
   const {
     data = [],
-    refetch: refetchFinishedRequests,
+    refetch: refetchCompletedRequests,
     isLoading,
   } = useQuery({
-    queryKey: ["get-finished-requests", masterId],
+    queryKey: ["get-completed-requests", masterId],
     queryFn: () =>
-      RequestService.getFinishedRequests(bukrs, "5", masterId!, from),
+      RequestService.getCompletedRequests(
+        bukrs,
+        String(ApplicationStatusId.COMPLETED),
+        masterId!,
+        from,
+      ),
     retry: false,
     enabled,
   });
 
-  return { finishedRequests: data, refetchFinishedRequests, isLoading };
+  return { completedRequests: data, refetchCompletedRequests, isLoading };
 };

@@ -8,13 +8,13 @@ import { Fragment, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import { ApplicationStatusId } from "../constants/status";
 import {
+  useCompletedSummary,
   useDoneRequests,
-  useFinishedSummary,
   useRequests,
 } from "../hooks/useRequest";
 import AssignedRequestCard from "./RequestCards/AssignedRequestCard";
 import DoneRequestCard from "./RequestCards/DoneRequestCard";
-import FinishedSummary from "./Summaries/FinishedSummary";
+import CompletedSummary from "./Summaries/CompletedSummary";
 
 type Props = {
   route: { key: string };
@@ -25,26 +25,26 @@ export default function RequestsScenes({ route }: Props) {
   let from: string | undefined;
   let to: string | undefined;
   let isDone = false;
-  let isFinished = false;
+  let isCompleted = false;
 
   const monthFrom = getCurrentMonthStart();
   const todayStr = getToday();
 
   switch (route.key) {
     case "assigned":
-      status = "2,9,10";
+      status = `${ApplicationStatusId.ASSIGNED},${ApplicationStatusId.ACCEPTED},${ApplicationStatusId.ARRIVED}`;
       break;
     case "done":
-      status = "8";
+      status = String(ApplicationStatusId.DONE);
       from = todayStr;
       to = todayStr;
       isDone = true;
       break;
-    case "finished":
-      status = "5";
+    case "completed":
+      status = String(ApplicationStatusId.COMPLETED);
       from = monthFrom;
       to = todayStr;
-      isFinished = true;
+      isCompleted = true;
       break;
   }
 
@@ -57,8 +57,8 @@ export default function RequestsScenes({ route }: Props) {
   const { doneRequests, refetchDoneRequests } = useDoneRequests({
     enabled: isDone,
   });
-  const { finishedRequests, refetchFinishedRequests } = useFinishedSummary({
-    enabled: isFinished,
+  const { completedRequests, refetchCompletedRequests } = useCompletedSummary({
+    enabled: isCompleted,
   });
 
   const onRefresh = async () => {
@@ -71,8 +71,8 @@ export default function RequestsScenes({ route }: Props) {
         case "done":
           await refetchDoneRequests();
           break;
-        case "finished":
-          await refetchFinishedRequests();
+        case "completed":
+          await refetchCompletedRequests();
           break;
       }
     } finally {
@@ -125,7 +125,7 @@ export default function RequestsScenes({ route }: Props) {
           refreshing={refreshing}
         />
       );
-    case "finished":
+    case "completed":
       return (
         <Fragment>
           <View className="mx-4 mb-3">
@@ -134,17 +134,17 @@ export default function RequestsScenes({ route }: Props) {
             </Text>
           </View>
           {/* <FlatList
-            data={finishedRequests || []}
-            renderItem={({ item }) => <FinishedRequestCard item={item} />}
+            data={completedRequests || []}
+            renderItem={({ item }) => <CompletedRequestCard item={item} />}
             keyExtractor={(item, index) => index.toString()}
             contentContainerStyle={style}
             onRefresh={onRefresh}
             refreshing={refreshing}
             ListFooterComponent={
-              <FinishedSummary finishedSummaryData={finishedRequests} />
+              <CompletedSummary completedSummaryData={completedRequests} />
             }
           /> */}
-          <FinishedSummary finishedSummaryData={finishedRequests} />
+          <CompletedSummary completedSummaryData={completedRequests} />
         </Fragment>
       );
     default:

@@ -1,11 +1,11 @@
 import { ApplicationStatusId } from "@/features/master/requests/constants/status";
 
-export type StatusText = "assigned" | "done" | "finished";
+export type StatusText = "assigned" | "done" | "completed";
 
 const map: Record<StatusText, string> = {
   assigned: "text-red",
   done: "text-blue",
-  finished: "text-primary",
+  completed: "text-primary",
 };
 
 export const getStatusColor = (status: StatusText): string => {

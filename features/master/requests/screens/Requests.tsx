@@ -10,7 +10,7 @@ export default function Requests() {
   const [routes] = useState([
     { key: "assigned", title: "Распределенные" },
     { key: "done", title: "Выполненные" },
-    { key: "finished", title: "Завершенные" },
+    { key: "completed", title: "Завершенные" },
   ]);
 
   return (

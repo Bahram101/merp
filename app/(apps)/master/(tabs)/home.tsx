@@ -1,5 +1,6 @@
 import Banner from "@/components/ui/master/Banner";
 import Header from "@/components/ui/master/Header";
+import { ApplicationStatusId } from "@/features/master/requests/constants/status";
 import RequestTypesToday from "@/features/master/requests/components/RequestTypesToday";
 import { useRequests } from "@/features/master/requests/hooks/useRequest";
 import React, { useState } from "react";
@@ -9,10 +10,14 @@ import { RefreshControl } from "react-native-gesture-handler";
 export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
 
-  const { requests, isLoadingRequests, refetch } = useRequests("2");
-  const { requests: doneReqCount, refetch: refetchDoneReqs } = useRequests("8");
-  const { requests: finishedReqCount, refetch: refetchFinishedReqs } =
-    useRequests("5");
+  const { requests, isLoadingRequests, refetch } = useRequests(
+    String(ApplicationStatusId.ASSIGNED),
+  );
+  const { requests: doneReqCount, refetch: refetchDoneReqs } = useRequests(
+    String(ApplicationStatusId.DONE),
+  );
+  const { requests: completedReqCount, refetch: refetchCompletedReqs } =
+    useRequests(String(ApplicationStatusId.COMPLETED));
 
   const groupedRequestList = requests.reduce(
     (acc: any, item: any) => {
@@ -35,7 +40,7 @@ export default function Home() {
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      await Promise.all([refetch(), refetchDoneReqs(), refetchFinishedReqs()]);
+      await Promise.all([refetch(), refetchDoneReqs(), refetchCompletedReqs()]);
     } finally {
       setRefreshing(false);
     }
@@ -49,7 +54,7 @@ export default function Home() {
         isAssignedLoading={isLoadingRequests}
         assigned={requests.length}
         done={doneReqCount.length}
-        finished={finishedReqCount.length}
+        completed={completedReqCount.length}
       />
       <ScrollView
         showsVerticalScrollIndicator={false}
