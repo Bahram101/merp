@@ -68,7 +68,7 @@ export const useCreateAccountability = () => {
       retry: false,
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["get-accountability-requests"],
+          queryKey: ["get-accountability-requests", 1],
         });
       },
     });

@@ -1,9 +1,5 @@
 import { Loader } from "@/components/ui/Loader";
-import {
-  getCurrentMonthName,
-  getCurrentMonthStart,
-  getToday,
-} from "@/utils/date";
+import { getCurrentMonthName } from "@/utils/date";
 import { Fragment, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import { ApplicationStatusId } from "../constants/status";
@@ -21,45 +17,26 @@ type Props = {
 };
 
 export default function RequestsScenes({ route }: Props) {
-  let status = "";
-  let from: string | undefined;
-  let to: string | undefined;
-  let isDone = false;
-  let isCompleted = false;
+  const isAssigned = route.key === "assigned";
+  const isDone = route.key === "done";
+  const isCompleted = route.key === "completed";
 
-  const monthFrom = getCurrentMonthStart();
-  const todayStr = getToday();
-
-  switch (route.key) {
-    case "assigned":
-      status = `${ApplicationStatusId.ASSIGNED},${ApplicationStatusId.ACCEPTED},${ApplicationStatusId.ARRIVED}`;
-      break;
-    case "done":
-      status = String(ApplicationStatusId.DONE);
-      from = todayStr;
-      to = todayStr;
-      isDone = true;
-      break;
-    case "completed":
-      status = String(ApplicationStatusId.COMPLETED);
-      from = monthFrom;
-      to = todayStr;
-      isCompleted = true;
-      break;
-  }
+  const status = isAssigned
+    ? `${ApplicationStatusId.ASSIGNED},${ApplicationStatusId.ACCEPTED},${ApplicationStatusId.ARRIVED}`
+    : "";
 
   const [refreshing, setRefreshing] = useState(false);
   const { requests, isLoadingRequests, refetch } = useRequests(
     status,
-    from,
-    to,
+    isAssigned,
   );
-  const { doneRequests, refetchDoneRequests } = useDoneRequests({
-    enabled: isDone,
-  });
-  const { completedRequests, refetchCompletedRequests } = useCompletedSummary({
-    enabled: isCompleted,
-  });
+  const { doneRequests, isLoadingDoneRequests, refetchDoneRequests } =
+    useDoneRequests({ enabled: isDone });
+  const {
+    completedRequests,
+    refetchCompletedRequests,
+    isLoading: isLoadingCompleted,
+  } = useCompletedSummary({ enabled: isCompleted });
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -98,12 +75,9 @@ export default function RequestsScenes({ route }: Props) {
     paddingHorizontal: 14,
   };
 
-  if (isLoadingRequests) {
-    return <Loader />;
-  }
-
   switch (route.key) {
     case "assigned":
+      if (isLoadingRequests) return <Loader />;
       return (
         <FlatList
           data={assignedReqList}
@@ -115,6 +89,7 @@ export default function RequestsScenes({ route }: Props) {
         />
       );
     case "done":
+      if (isLoadingDoneRequests) return <Loader />;
       return (
         <FlatList
           data={doneRequests}
@@ -126,6 +101,7 @@ export default function RequestsScenes({ route }: Props) {
         />
       );
     case "completed":
+      if (isLoadingCompleted) return <Loader />;
       return (
         <Fragment>
           <View className="mx-4 mb-3">

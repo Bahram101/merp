@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { HistoryService } from "../services/history.service";
 
-export const useHistories = (contractNumber: number) => {
+export const useHistories = (contractNumber?: number) => {
   const { data: historyList = [], isFetching: isLoading } = useQuery({
     queryKey: ["get-history-list", contractNumber],
-    queryFn: () => HistoryService.getHistoryList(contractNumber),
+    queryFn: () => HistoryService.getHistoryList(contractNumber!),
+    enabled: !!contractNumber,
     retry: 1,
   });
   return { historyList, isLoading };

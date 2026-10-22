@@ -14,7 +14,7 @@ export default function HistoryListScreen() {
   const navigation = useNavigation();
   const { contractNumber, appNumber } = useLocalSearchParams<Params>();
   const contractNum = contractNumber ? Number(contractNumber) : undefined;
-  const { historyList, isLoading } = useHistories(contractNum!);
+  const { historyList, isLoading } = useHistories(contractNum);
 
   useEffect(() => {
     navigation.setOptions({
@@ -22,7 +22,7 @@ export default function HistoryListScreen() {
     });
   }, [navigation]);
 
-  if (isLoading) {
+  if (isLoading || !contractNum) {
     return <Loader />;
   }
 

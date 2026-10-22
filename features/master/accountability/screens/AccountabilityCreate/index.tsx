@@ -9,7 +9,7 @@ import { useBottomSheet } from "@/providers/BottomSheet/AppBottomSheetProvider";
 import * as Haptics from "expo-haptics";
 import { router, useFocusEffect, useNavigation } from "expo-router";
 import { CirclePlus } from "lucide-react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -30,26 +30,22 @@ const CreateAccountabilityRequest = () => {
   const { showBottomSheet, updateModalProps } = useBottomSheet();
 
   const { data } = useMaterials();
-  const [items, setItems] = useState([]);
+  const items = useMemo(
+    () =>
+      data.map((item: any) => ({
+        ...item,
+        matnrCode: item.code,
+        availableQty: item.quantity,
+        quantity: 0,
+      })),
+    [data],
+  );
   const [formData, setFormData] = useState<
     Partial<CreateAccountabilityPayload>
   >({});
   const { createAccountability, isCreating } = useCreateAccountability();
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const selectedIds = selectedItems.map((i) => String(i.matnr));
-
-  useEffect(() => {
-    if (data.length > 0) {
-      setItems(
-        data.map((item: any) => ({
-          ...item,
-          matnrCode: item.code,
-          availableQty: item.quantity,
-          quantity: 0,
-        })),
-      );
-    }
-  }, [data]);
 
   useEffect(() => {
     navigation.setOptions({

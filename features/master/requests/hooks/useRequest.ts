@@ -1,10 +1,12 @@
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { getCurrentMonthStart } from "@/utils/date";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApplicationStatusId } from "../constants/status";
 import { RequestService } from "../services/request.service";
 
-export const useRequests = (status: string, from?: string, to?: string) => {
+export const MASTER_REQUESTS_QUERY_KEY = "get-master-requests";
+export const MASTER_DONE_REQUESTS_QUERY_KEY = "get-master-done-requests";
+
+export const useRequests = (status: string, enabled: boolean = true) => {
   const { user } = useAuth();
   const masterId = user?.userInfo.currentStaff.staffId;
   const bukrs = user?.userInfo.bukrs[0].id;
@@ -12,13 +14,11 @@ export const useRequests = (status: string, from?: string, to?: string) => {
   const {
     data: requests = [],
     isLoading: isLoadingRequests,
-    // refetch: refetchRequests,
     refetch,
   } = useQuery({
-    queryKey: ["get-master-requests", masterId, status, from, to],
+    queryKey: [MASTER_REQUESTS_QUERY_KEY, masterId, status],
     queryFn: () => RequestService.getMasterRequests(masterId!, status, bukrs),
-    enabled: !!masterId,
-    staleTime: 0,
+    enabled: !!masterId && enabled,
     retry: 1,
   });
   return { requests, isLoadingRequests, refetch };
@@ -58,8 +58,21 @@ export const useUpdateRequestStatus = () => {
             applicationStatusId: application.applicationStatusId,
           }),
         );
+        const activeStatusIds = [
+          ApplicationStatusId.ASSIGNED,
+          ApplicationStatusId.ACCEPTED,
+          ApplicationStatusId.ARRIVED,
+        ].map(String);
+
         queryClient.invalidateQueries({
-          queryKey: ["get-master-requests"],
+          predicate: (query) => {
+            if (query.queryKey[0] !== MASTER_REQUESTS_QUERY_KEY) return false;
+            const status = query.queryKey[2];
+            return (
+              typeof status === "string" &&
+              status.split(",").some((id) => activeStatusIds.includes(id))
+            );
+          },
         });
       },
     });
@@ -75,7 +88,7 @@ export const useDoneRequests = ({ enabled }: { enabled: boolean }) => {
     isLoading: isLoadingDoneRequests,
     refetch: refetchDoneRequests,
   } = useQuery({
-    queryKey: ["get-master-done-requests", masterId],
+    queryKey: [MASTER_DONE_REQUESTS_QUERY_KEY, masterId],
     queryFn: () => RequestService.getMastersDoneRequests(masterId!),
     retry: false,
     enabled,
@@ -103,27 +116,11 @@ export const useDoneRequestDetail = (id: number) => {
 };
 
 export const useCompletedSummary = ({ enabled }: { enabled: boolean }) => {
-  const { user } = useAuth();
-  const from = getCurrentMonthStart();
-  const masterId = user?.userInfo.currentStaff.staffId;
-  const bukrs = user?.userInfo.bukrs[0].id;
-
   const {
-    data = [],
+    requests: completedRequests,
+    isLoadingRequests: isLoading,
     refetch: refetchCompletedRequests,
-    isLoading,
-  } = useQuery({
-    queryKey: ["get-completed-requests", masterId],
-    queryFn: () =>
-      RequestService.getCompletedRequests(
-        bukrs,
-        String(ApplicationStatusId.COMPLETED),
-        masterId!,
-        from,
-      ),
-    retry: false,
-    enabled,
-  });
+  } = useRequests(String(ApplicationStatusId.COMPLETED), enabled);
 
-  return { completedRequests: data, refetchCompletedRequests, isLoading };
+  return { completedRequests, refetchCompletedRequests, isLoading };
 };

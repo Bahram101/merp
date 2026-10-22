@@ -81,24 +81,4 @@ export const RequestService = {
     }
   },
 
-  async getCompletedRequests(
-    bukrs: string,
-    status: string,
-    masterId: number,
-    from: string,
-  ) {
-    try {
-      const { data } = await apiInstance.get("/api/service/smappl/appList", {
-        params: {
-          bukrs,
-          appStatusIds: status,
-          masterId,
-          dateOpenAt: from,
-        },
-      });
-      return data.data;
-    } catch (e) {
-      throw e;
-    }
-  },
 };
